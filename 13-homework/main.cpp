@@ -1,6 +1,6 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
-#include <curses.h>
-#define getch() wgetch(stdscr)
+#include <cstring>
 
 static int a;
 using namespace std;
@@ -14,7 +14,7 @@ struct Node
 
     Node* m_left;
     Node* m_right;
-    
+
 
     char* GetEnglish();
     char* GetRussian();
@@ -35,10 +35,10 @@ public:
     Tree();
 
     ~Tree();
-    
+
     // Получить корень.
     Node* GetRoot() const;
-    
+
     // Вставка узла.
     void Insert(Node* node);
 
@@ -87,21 +87,21 @@ int main()
 
         switch (choice)
         {
-            case '1':
-                Insert(tree);
-                break;
-            case '2':
-                Remove(tree);
-                break;
-            case '3':
-                Print(tree);
-                break;
-            case '4':
-                Search(tree);
-                break;
-            case '5':
-                exit = true;
-                break;
+        case '1':
+            Insert(tree);
+            break;
+        case '2':
+            Remove(tree);
+            break;
+        case '3':
+            Print(tree);
+            break;
+        case '4':
+            Search(tree);
+            break;
+        case '5':
+            exit = true;
+            break;
         }
 
         if (exit)
@@ -123,7 +123,7 @@ char* Node::GetRussian()
     return m_russian;
 }
 
-Tree::Tree() : m_root(nullptr),  m_size(0U)
+Tree::Tree() : m_root(nullptr), m_size(0U)
 {
 }
 
@@ -197,7 +197,7 @@ Node* Tree::Max(Node* node) const
             node = node->m_right;
         }
     }
-    
+
     return node;
 }
 
@@ -211,7 +211,7 @@ Node* Tree::Min(Node* node) const
             node = node->m_left;
         }
     }
-    
+
     return node;
 }
 
@@ -331,7 +331,7 @@ void Tree::Remove(Node* removeNode)
         {
             temp->m_parent->m_right = node;
         }
-        
+
         if (temp != removeNode)
         {
             // Копирование данных узла.
@@ -390,7 +390,7 @@ void Print(const Tree& tree)
 {
     tree.Print(tree.GetRoot());
 
-    getch();
+   
 }
 
 void PrintMenu()
@@ -431,5 +431,5 @@ void Search(const Tree& tree)
         cout << "Word not found" << endl;
     }
 
-    getch();
+
 }
