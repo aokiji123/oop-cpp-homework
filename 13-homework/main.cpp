@@ -87,19 +87,19 @@ int main()
 
         switch (choice)
         {
-        case '1':
+        case 1:
             Insert(tree);
             break;
-        case '2':
+        case 2:
             Remove(tree);
             break;
-        case '3':
+        case 3:
             Print(tree);
             break;
-        case '4':
+        case 4:
             Search(tree);
             break;
-        case '5':
+        case 5:
             exit = true;
             break;
         }
