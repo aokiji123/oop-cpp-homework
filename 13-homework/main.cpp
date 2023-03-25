@@ -5,63 +5,37 @@
 static int a;
 using namespace std;
 
+
 struct Node
 {
-    char m_english[15];
-    char m_russian[15];
+    char fullName[50];
+    double average;
 
-    Node* m_parent;
+    Node* Parent;
+    Node* Left;
+    Node* Right;
 
-    Node* m_left;
-    Node* m_right;
-
-
-    char* GetEnglish();
-    char* GetRussian();
+    char* GetFullName();
+    double GetAverage();
 };
 
 class Tree
 {
-private:
-
-    // Корень.
-    Node* m_root;
-
-    // Количество узлов.
-    unsigned int m_size;
-
+    Node* Root;
+    unsigned int Size;
 public:
-
     Tree();
-
     ~Tree();
 
-    // Получить корень.
     Node* GetRoot() const;
-
-    // Вставка узла.
-    void Insert(Node* node);
-
-    // Максимальное значение от указанного узла.
-    Node* Max(Node* node) const;
-
-    // Минимальное значение от указанного узла.
-    Node* Min(Node* node) const;
-
-    // Следующий узел для указанного узла.
-    Node* Next(const Node* node) const;
-
-    // Предыдущий узел для указанного узла.
-    Node* Previous(const Node* node) const;
-
-    // Печать от указанного узла.
-    void Print(const Node* node) const;
-
-    // Удаление ветки для указанного узла.
-    void Remove(Node* node);
-
-    // Поиск от указанного узла.
-    Node* Search(Node* node, const char* key) const;
+    void Insert(Node* el);
+    Node* Max(Node* el) const;
+    Node* Min(Node* el) const;
+    Node* Next(const Node* el) const;
+    Node* Previous(const Node* el) const;
+    void Print(const Node* el) const;
+    void Remove(Node* el);
+    Node* Search(Node* el, const char* key) const;
 };
 
 void Insert(Tree& tree);
@@ -113,130 +87,116 @@ int main()
     return 0;
 }
 
-char* Node::GetEnglish()
+char* Node::GetFullName()
 {
-    return m_english;
+    return fullName;
 }
 
-char* Node::GetRussian()
+double Node::GetAverage()
 {
-    return m_russian;
+    return average;
 }
 
-Tree::Tree() : m_root(nullptr), m_size(0U)
+Tree::Tree() : Root(nullptr), Size(0U)
 {
 }
 
 Tree::~Tree()
 {
-    while (m_root != nullptr)
-    {
-        Remove(m_root);
-    }
+    while (Root != nullptr)
+        Remove(Root);
 }
 
 Node* Tree::GetRoot() const
 {
-    return m_root;
+    return Root;
 }
 
 void Tree::Insert(Node* newNode)
 {
-    // Потомков нет.
-    newNode->m_left = nullptr;
-    newNode->m_right = nullptr;
+    newNode->Left = nullptr;
+    newNode->Right = nullptr;
 
-    Node* node = m_root;
+    Node* el = Root;
     Node* temp = nullptr;
 
-    // Поиск места.
-    while (node != nullptr)
+    while (el != nullptr)
     {
-        // Будущий родитель.
-        temp = node;
+        temp = el;
 
-        if (strcmp(newNode->m_english, node->m_english) < 0)
+        if (strcmp(newNode->fullName, el->fullName) < 0)
         {
-            node = node->m_left;
+            el = el->Left;
 
         }
         else
         {
-            node = node->m_right;
+            el = el->Right;
         }
     }
 
-    // Заполняем родителя.
-    newNode->m_parent = temp;
+    newNode->Parent = temp;
 
-    // Элемент первый (единственный).
     if (temp == nullptr)
     {
-        m_root = newNode;
+        Root = newNode;
     }
-    // Опеределение большего ключа.
-    else if (strcmp(newNode->m_english, temp->m_english) < 0)
+    else if (strcmp(newNode->fullName, temp->fullName) < 0)
     {
-        temp->m_left = newNode;
+        temp->Left = newNode;
     }
     else
     {
-        temp->m_right = newNode;
+        temp->Right = newNode;
     }
 
-    ++m_size;
+    ++Size;
 }
 
-Node* Tree::Max(Node* node) const
+Node* Tree::Max(Node* el) const
 {
-    // Поиск самого "правого" узла.
-    if (node != nullptr)
+    if (el != nullptr)
     {
-        while (node->m_right != nullptr)
+        while (el->Right != nullptr)
         {
-            node = node->m_right;
+            el = el->Right;
         }
     }
 
-    return node;
+    return el;
 }
 
-Node* Tree::Min(Node* node) const
+Node* Tree::Min(Node* el) const
 {
-    // Поиск самого "левого" узла.
-    if (node != nullptr)
+    if (el != nullptr)
     {
-        while (node->m_left != nullptr)
+        while (el->Left != nullptr)
         {
-            node = node->m_left;
+            el = el->Left;
         }
     }
 
-    return node;
+    return el;
 }
 
-Node* Tree::Next(const Node* node) const
+Node* Tree::Next(const Node* el) const
 {
     Node* next = nullptr;
 
-    if (node != nullptr)
+    if (el != nullptr)
     {
-        // Если есть правый потомок.
-        if (node->m_right != nullptr)
+        if (el->Right != nullptr)
         {
-            next = Min(node->m_right);
+            next = Min(el->Right);
         }
         else
         {
-            // Родитель узла.
-            next = node->m_parent;
+            next = el->Parent;
 
-            // Если node не корень и node справа.
-            while (next != nullptr && node == next->m_right)
+            while (next != nullptr && el == next->Right)
             {
-                // Движемся вверх.
-                node = next;
-                next = next->m_parent;
+                el = next;
+                next = next->Parent;
             }
         }
     }
@@ -244,28 +204,24 @@ Node* Tree::Next(const Node* node) const
     return next;
 }
 
-Node* Tree::Previous(const Node* node) const
+Node* Tree::Previous(const Node* el) const
 {
     Node* previous = nullptr;
 
-    if (node != nullptr)
+    if (el != nullptr)
     {
-        // Если есть левый потомок.
-        if (node->m_left != nullptr)
+        if (el->Left != nullptr)
         {
-            previous = Max(node->m_left);
+            previous = Max(el->Left);
         }
         else
         {
-            // Родитель узла.
-            previous = node->m_parent;
+            previous = el->Parent;
 
-            // Если node не корень и node слева.
-            while (previous != nullptr && node == previous->m_left)
+            while (previous != nullptr && el == previous->Left)
             {
-                // Движемся вверх.
-                node = previous;
-                previous = previous->m_parent;
+                el = previous;
+                previous = previous->Parent;
             }
         }
     }
@@ -273,15 +229,15 @@ Node* Tree::Previous(const Node* node) const
     return previous;
 }
 
-void Tree::Print(const Node* node) const
+void Tree::Print(const Node* el) const
 {
-    if (node != nullptr)
+    if (el != nullptr)
     {
-        Print(node->m_left);
+        Print(el->Left);
 
-        cout << node->m_english << '\t' << node->m_russian << endl;
+        cout << el->fullName << '\t' << el->average << endl;
 
-        Print(node->m_right);
+        Print(el->Right);
     }
 }
 
@@ -289,11 +245,10 @@ void Tree::Remove(Node* removeNode)
 {
     if (removeNode != nullptr)
     {
-        Node* node = nullptr;
+        Node* el = nullptr;
         Node* temp = nullptr;
 
-        // Не 2 дочерних элемента.
-        if (removeNode->m_left == nullptr || removeNode->m_right == nullptr)
+        if (removeNode->Left == nullptr || removeNode->Right == nullptr)
         {
             temp = removeNode;
         }
@@ -302,72 +257,66 @@ void Tree::Remove(Node* removeNode)
             temp = Next(removeNode);
         }
 
-        if (temp->m_left != nullptr)
+        if (temp->Left != nullptr)
         {
-            node = temp->m_left;
+            el = temp->Left;
         }
         else
         {
-            node = temp->m_right;
+            el = temp->Right;
         }
 
-        if (node != nullptr)
+        if (el != nullptr)
         {
-            node->m_parent = temp->m_parent;
+            el->Parent = temp->Parent;
         }
 
-        // Удаляется корневой узел?
-        if (temp->m_parent == nullptr)
+        if (temp->Parent == nullptr)
         {
-            m_root = node;
+            Root = el;
         }
-        // Слева от родителя?
-        else if (temp == temp->m_parent->m_left)
+
+        else if (temp == temp->Parent->Left)
         {
-            temp->m_parent->m_left = node;
+            temp->Parent->Left = el;
         }
-        // Справа от родителя?
+
         else
         {
-            temp->m_parent->m_right = node;
+            temp->Parent->Right = el;
         }
 
         if (temp != removeNode)
         {
-            // Копирование данных узла.
-            strcpy(removeNode->m_english, temp->m_english);
-            strcpy(removeNode->m_russian, temp->m_russian);
+            strcpy(removeNode->fullName, temp->fullName);
+            removeNode->average = temp->average;
         }
 
         delete temp;
 
-        --m_size;
+        --Size;
     }
 }
 
-Node* Tree::Search(Node* node, const char* key) const
+Node* Tree::Search(Node* el, const char* key) const
 {
-    // Пока есть узлы и ключи не совпадают.
-    while (node != nullptr && strcmp(key, node->m_english) != 0)
+    while (el != nullptr && strcmp(key, el->fullName) != 0)
     {
-        if (strcmp(key, node->m_english) < 0)
+        if (strcmp(key, el->fullName) < 0)
         {
-            node = node->m_left;
+            el = el->Left;
         }
         else
         {
-            node = node->m_right;
+            el = el->Right;
         }
     }
-
-    return node;
+    return el;
 }
-
-
 
 void Insert(Tree& tree)
 {
-    cout << "Enter a quantity of elements to add: ";
+    cout << "Enter a quantity of Nodeents to add: ";
 
     unsigned int count = 0U;
     cin >> count;
@@ -376,11 +325,11 @@ void Insert(Tree& tree)
     {
         Node* temp = new Node;
 
-        cout << endl << "Enter an english word " << i + 1 << endl;
-        cin >> temp->GetEnglish();
+        cout << endl << "Enter a fullname " << i + 1 << endl;
+        cin >> temp->GetFullName();
 
-        cout << endl << "Enter a russian word " << i + 1 << endl;
-        cin >> temp->GetRussian();
+        cout << endl << "Enter an average " << i + 1 << endl;
+        cin >> temp->average;
 
         tree.Insert(temp);
     }
@@ -389,20 +338,18 @@ void Insert(Tree& tree)
 void Print(const Tree& tree)
 {
     tree.Print(tree.GetRoot());
-
-   
 }
 
 void PrintMenu()
 {
-    char menu[] = "1. Insert node\n2. Remove node\n3. Print node\n4. Search node\n5. Exit\n";
+    char menu[] = "1. Insert Node\n2. Remove Node\n3. Print Node\n4. Search Node\n5. Exit\n";
 
     cout << menu;
 }
 
 void Remove(Tree& tree)
 {
-    cout << "Enter an english word to remove:" << endl;
+    cout << "Enter an fullname to remove:" << endl;
 
     char buffer[15] = {};
     cin >> buffer;
@@ -414,8 +361,7 @@ void Remove(Tree& tree)
 
 void Search(const Tree& tree)
 {
-
-    cout << "Enter an english word to search:" << endl;
+    cout << "Enter a fullname to search:" << endl;
 
     char buffer[15] = {};
     cin >> buffer;
@@ -424,12 +370,10 @@ void Search(const Tree& tree)
 
     if (node != nullptr)
     {
-        cout << node->GetRussian();
+        cout << node->GetAverage();
     }
     else
     {
-        cout << "Word not found" << endl;
+        cout << "Name not found" << endl;
     }
-
-
 }
