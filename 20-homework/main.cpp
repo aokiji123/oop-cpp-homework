@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Animal.h"
+#include "IsLuckyNumber.h"
 
 int main() {
     IAnimal* ref[4] = { 
@@ -23,4 +24,22 @@ int main() {
 
     IBird* f[2] = { new Parrot("Parrot", 1, "Green"), new Duck("Duck", 8, "Grey") };
     for (int i = 0; i < 2; i++) f[i]->Fly();
+
+    // exception 
+    try {
+		int number;
+		cout << "Enter number: ";
+		cin >> number;
+		cout << boolalpha << "Is lucky number: " << isLuckyNumber(number) << "\n";
+	}
+	catch (const char* str) 
+    { 
+        cout << "Error: " << str << "\n"; 
+    }
+	catch (const exception& ex) 
+    {
+        cout << "Error: " << ex.what() << "\n"; 
+    }
+
+    return 0;
 }
